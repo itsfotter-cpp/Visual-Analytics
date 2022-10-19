@@ -1,0 +1,155 @@
+/* START HTML STYLE */
+
+:root{
+  --main-radius:5px;
+  --main-padding:5px;
+}
+
+.legendText-scatter{
+	stroke:black;
+}
+
+text {
+  font-family: sans-serif;
+  /*fill: #000000;*/
+}
+
+svg {
+  font: 10px sans-serif;
+}
+
+.my-btn-selected {
+  background-color: rgb(132, 163, 193);
+  color: white;
+  border-color: rgb(132, 163, 193);
+}
+
+.my-btn-not-selected {
+  background-color:#FFF;
+  color: rgb(132, 163, 193);
+  border-color: rgb(132, 163, 193);
+}
+
+#pca{
+  background-color: rgb(137, 255, 237);
+  grid-area: pca;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+#dce{
+  background-color: rgb(81, 255, 214);
+  grid-area: dce;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+#genescatter{
+  grid-area: geneview;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+#parallel{
+  grid-area: genefilter;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+#parallelReset, #radarReset {
+  margin: 0;
+  padding: 18px;
+  background-color: #ff4747;
+}
+
+#table{
+  height: 401px;
+  overflow: auto;
+  grid-area: table;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+#table td,th {
+  text-align: center;
+}
+
+@media only screen and (max-width:1500px){
+  .container{
+      grid-template-columns: 1fr;
+      grid-template-rows: 0.4fr 1.12fr 1.12fr 1.12fr 1.12fr 1.12fr;
+      grid-template-areas: 
+      "nav"
+      "pca"
+      "dce"
+      "geneview"
+      "genefilter"
+      "table";
+  grid-gap : 0.2rem;
+  }
+}
+
+
+
+
+/* END HTML STYLE */
+
+.tooltip {
+    position: absolute;
+    font-size: 12px;
+    width:  auto;
+    height: auto;
+    pointer-events: none;
+    background-color: white;
+}
+.selected {
+    opacity: 1 !important;
+    stroke: black;
+    stroke-width: 1px;
+  }
+
+  .intersected {
+    opacity: 1 !important;
+    stroke: black;
+    stroke-width: 1px;
+}
+
+/* PARALLEL COORDINATES */
+
+.background path {
+    fill: none;
+    stroke: #ddd;
+    shape-rendering: crispEdges;
+  }
+
+  .brush .extent {
+    fill-opacity: .3;
+    stroke: #fff;
+    shape-rendering: crispEdges;
+  }
+  
+  .axis line,
+  .axis path {
+    /* fill: none;
+    stroke: #000; */
+    shape-rendering: crispEdges;
+  }
+  
+  .axis text {
+      /*fill:black;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff; */
+  }
+  pre {
+    width: 100%;
+    height: 300px;
+    margin: 6px 12px;
+    tab-size: 40;
+    font-size: 10px;
+    overflow: auto;
+  }
+
+@media screen and (max-width: 800px) {
+    .pca, .dce {
+      width: 100%; 
+    }
+  }

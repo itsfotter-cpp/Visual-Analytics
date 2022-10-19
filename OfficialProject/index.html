@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/radar-chart.css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+
+    <!-- Radar Chart -->
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <script>
+        var d3v3 = window.d3;
+        window.d3 = null;
+    </script>
+    <script src="js/radar-chart.js"></script>
+    <script src="js/radar-chart.min.js"></script>
+    <script src="js/radar.js"></script>
+
+    <!-- d3 CDN -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-scale.v3.min.js"></script>
+
+    <!-- Scatter Plot and Parallel Coordinate  -->
+    <script src="js/dce.js" defer></script>
+    <script src="js/bar-chart.js" defer></script>
+
+    <style>
+        .card,
+        #playerBox {
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        }
+
+        .card-header {
+            background-color: #7fcfd6;
+        }
+    </style>
+
+    <title>Visual Analytics Project</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-dark py-0">
+        <div class="container-fluid ps-3 pe-0">
+            <a class="navbar-brand" href="#">
+                <img src="./images/Electronic-Arts-Logo.svg" alt="" width="30" height="30"
+                    class="d-inline-block align-text-top">
+                FIFA22 Players Analysis
+            </a>
+
+            <div class="d-flex">
+                <div class="form-check form-switch pe-3" style="align-self: center;">
+                    <img src="./images/sun-white.png" width="20" height="20"
+                        style="vertical-align:sub; margin-right: 43px">
+                    <input class="form-check-input" type="checkbox" role="switch" style="float: revert;"
+                        onclick="DarkMode(this);">
+                    <img src="./images/moon-white.png" width="20" height="20" style="vertical-align:sub;">
+                </div>
+                <!-- <div id="parallelReset">
+                    <a href="#"><img src="images/refresh.svg" width="20" height="20"></a>
+                </div> -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row mt-1">
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-header p-2 text-center">
+                        <b>SCATTER PLOT</b>
+                    </div>
+                    <div id="genescatter" class="card-body py-0">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-5">
+                <div class="card text-bg-dark">
+                    <div class="card-header p-0 text-center">
+                        <b style="vertical-align: -webkit-baseline-middle;">PARALLEL COORDINATED VIEW</b>
+                        <span class="py-2 px-3" id="parallelReset" style="float: right; border-radius: 0 3px 0 0;">
+                            <img src="images/refresh.svg" width="20" height="20">
+                            <label style="color: white;">RESET</label>
+                        </span>
+                    </div>
+                    <div id="parallel" class="card-body py-0" style="align-self: center;">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="card">
+                    <div class="card-header p-2 text-center">
+                        <b>DYNAMIC TABLE</b>
+                    </div>
+                    <div id="table" class="card-body py-0">
+                        <table id="table-players" class="table table-striped">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-5">
+                <div class="card">
+                    <div class="card-header p-0 text-center">
+                        <b style="vertical-align: -webkit-baseline-middle;">RADAR CHART</b>
+                        <span class="py-2 px-3" id="radarReset" style="float: right; border-radius: 0 3px 0 0;">
+                            <img src="images/refresh.svg" width="20" height="20">
+                            <label style="color: white;">RESET</label>
+                        </span>
+                    </div>
+                    <div class="row g-0">
+                        <div class="d-grid gap-2 col-4 py-1 ps-2">
+                            <div class="col-12">
+                                <input type="text" class="form-control" id="searchPlayerInput" placeholder="Player Name"
+                                    onkeyup="searchPlayer();">
+                            </div>
+                            <div class="col-12">
+                                <div class="px-2 py-1" id="playerBox"
+                                    style="height: 335px; overflow: auto;
+                                border: 1px solid rgba(0,0,0,.125);border-radius: 0.25em; position: relative; border-collapse: collapse;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8" style="align-self: center;">
+                            <div class="card-body py-0" id="chart-container" style="text-align:center">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-7">
+                <div class="card">
+                    <div class="card-header p-2 text-center">
+                        <b>BAR CHART</b>
+                    </div>
+                    <div class="row g-0">
+                        <div class="d-grid gap-2 col-2 ps-3">
+                            <div class="col-12" style="align-self: end; text-align-last: center;">
+                                <button id="btnHeight" class="btn" type="button" onclick="update('Height')"
+                                    style="width: 100%;">Height</button>
+                            </div>
+                            <div class="col-12" style="text-align-last: center;">
+                                <button id="btnWeight" class="btn" type="button" onclick="update('Weight')"
+                                    style="width: 100%;">Weight</button>
+                            </div>
+                        </div>
+                        <div class="col-10">
+                            <div class="card-body py-0" id="bar_chart_height_weight">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+
+    <script>
+        var arr = [{
+            className: "",
+            axes: [{
+                    axis: ["Crossing"],
+                    pxvalue: 0,
+                    x: 0,
+                    y: 0
+                },
+                {
+                    axis: ["Finishing"],
+                    value: 0,
+                    x: 0,
+                    y: 0
+                },
+                {
+                    axis: ["HeadingAccuracy"],
+                    value: 0,
+                    x: 0,
+                    y: 0
+                },
+                {
+                    axis: ["Acceleration"],
+                    value: 0,
+                    x: 0,
+                    y: 0
+                },
+                {
+                    axis: ["GKReflexes"],
+                    value: 0,
+                    x: 0,
+                    y: 0
+                },
+                {
+                    axis: ["DefensiveAwareness"],
+                    value: 0,
+                    x: 0,
+                    y: 0
+                }
+            ]
+        }];
+
+        window.addEventListener('load', (event) => {
+            // console.log(arr);
+            // console.log('page is fully loaded');
+            RadarChart.defaultConfig.radius = 3;
+            RadarChart.defaultConfig.w = 350;
+            RadarChart.defaultConfig.h = 350;
+
+            RadarChart.draw("#chart-container", arr);
+        });
+
+
+        var myRadarReset = document.getElementById("radarReset");
+
+        myRadarReset.onclick = function () {
+
+            var playerChecked = document.getElementsByName("playerRadio");
+
+
+            for (let index = 0; index < playerChecked.length; index++) {
+                if (playerChecked[index].checked) {
+                    playerChecked[index].checked = false;
+                    //selectPlayer(playerChecked[index]);
+                }
+            }
+
+            selectedPlayer.clear();
+            radarSet.clear();
+
+            RadarChart.defaultConfig.radius = 3;
+            RadarChart.defaultConfig.w = 350;
+            RadarChart.defaultConfig.h = 350;
+
+            RadarChart.draw("#chart-container", arr);
+
+            if (flagSwitch) {
+                var valDesc = document.querySelectorAll(".valueDescription");
+
+                for (let index = 0; index < valDesc.length; index++) {
+                    // newTick[index].firstChild.setAttribute("stroke", "#FFF");
+                    valDesc[index].setAttribute("fill", "#FFF");
+
+                }
+            }
+        }
+
+        var flagSwitch = false;
+
+        function DarkMode(switcher) {
+
+            var cardList = document.querySelectorAll("div.card");
+
+            var domainList = document.querySelectorAll("path.domain");
+            var tickList = document.querySelectorAll("g.tick");
+            var pColumnDesc = document.querySelectorAll(".parallelColumnDescription");
+            var checkPlayer = document.querySelectorAll("label.form-check-label");
+            var valueDescription = document.querySelectorAll(".valueDescription");
+            var legendScatter = document.querySelectorAll(".legendText-scatter");
+
+            if (switcher.checked) {
+
+                flagSwitch = true;
+
+                document.body.style.background = "#404040";
+                document.getElementById("table-players").setAttribute("class", "table table-striped table-secondary");
+
+                // document.getElementById("table-players").classList.add("table-secondary");
+
+                for (let i = 0; i < domainList.length; i++) {
+                    domainList[i].setAttribute("stroke", "#FFF");
+                }
+
+                for (i = 0; i < pColumnDesc.length; i++) {
+                    pColumnDesc[i].style.fill = "#FFF";
+                    console.log(pColumnDesc[i]);
+                }
+
+                for (i = 0; i < tickList.length; i++) {
+                    tickList[i].firstChild.setAttribute("stroke", "#FFF");
+                    tickList[i].lastChild.setAttribute("fill", "#FFF");
+                }
+
+                for (i = 0; i < checkPlayer.length; i++) {
+                    checkPlayer[i].style.color = "#FFF";
+                }
+
+                for (i = 0; i < valueDescription.length; i++) {
+                    valueDescription[i].style.fill = "#FFF";
+                }
+
+                for (i = 0; i < legendScatter.length; i++) {
+                    legendScatter[i].style.stroke = "#FFF";
+                }
+
+                for (i = 0; i < cardList.length; i++) {
+                    cardList[i].style.backgroundColor = "#404040";
+                }
+
+            } else {
+
+                flagSwitch = false;
+
+                document.body.style.background = "#FFF";
+                document.getElementById("table-players").setAttribute("class", "table table-striped");
+
+                for (let i = 0; i < domainList.length; i++) {
+                    domainList[i].setAttribute("stroke", "black");
+                }
+
+                for (i = 0; i < pColumnDesc.length; i++) {
+                    pColumnDesc[i].style.fill = "black";
+                }
+
+                for (i = 0; i < tickList.length; i++) {
+                    tickList[i].firstChild.setAttribute("stroke", "black");
+                    tickList[i].lastChild.setAttribute("fill", "black");
+                }
+
+                for (i = 0; i < checkPlayer.length; i++) {
+                    checkPlayer[i].style.color = "black";
+                }
+
+                for (i = 0; i < valueDescription.length; i++) {
+                    valueDescription[i].style.fill = "black";
+                }
+
+                for (i = 0; i < legendScatter.length; i++) {
+                    legendScatter[i].style.stroke = "black";
+                }
+
+                for (let i = 0; i < cardList.length; i++) {
+                    cardList[i].style.backgroundColor = "#FFF";
+                }
+            }
+
+        }
+    </script>
+
+</body>
+
+</html>
